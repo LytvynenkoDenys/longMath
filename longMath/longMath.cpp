@@ -2,142 +2,40 @@
 #include <string>
 
 using namespace std;
+static const int N = 6;
+static const int BASE = pow(10, N);
 
 class  longNumeric
 {
 	public:
-		static const long long BASE = 1e9;
-		static const long long SIZE = 10;
-		long long digits[SIZE];
-
-		longNumeric()
+		int count;
+		int sizeOfarray;
+		long long *arr;
+		longNumeric(string s)
 		{
-			for (int i = 0; i < SIZE; ++i)
-			digits[i] = 0;
-		}
-
-		longNumeric(long long x)
-		{
-			longNumeric();
-			int next = 0;
-			while (x)
+			int temp = s.length();
+			count = temp / 6 + 1;
+			arr = new long long[count];
+			for (int i = 0; i < count - 1; ++i)
 			{
-				digits[next++] = x % BASE;
-				x /= BASE;
-			}
-		}
-		
-		longNumeric& operator=(longNumeric& a)
-		{
-			for (int i = 0; i < SIZE; ++i)
-				digits[i] = a.digits[i];
-			return *this;
-		}
-
-		void operator+=(longNumeric& a)
-		{
-			for (int i = 0; i < SIZE; ++i)
-				digits[i] += a.digits[i];
-			for (int i = 0; i < SIZE - 1; ++i)
-			{
-				if (digits[i] >= BASE)
+				arr[i] = 0;
+				int p = 1;
+				for (int j = 0; j < (i < count - 1 ? 6 : (temp % 6)); ++j)
 				{
-					digits[i] -= BASE;
-					++digits[i + 1];
+					arr[i] += s[temp - i*6 - 1 - j] * p;
+					p *= 10;
 				}
 			}
 		}
+};
 
-		longNumeric& operator+(longNumeric& a)
-		{
-			longNumeric n(*this);
-			n += a;
-			return n;
-		}
-
-		longNumeric& operator++()
-		{
-			*this += longNumeric(1);
-			return *this;
-		}
-
-		void operator-=(longNumeric& a)
-		{
-			for (int i = 0; i < SIZE; ++i)
-				digits[i] -= a.digits[i];
-			for (int i = 0; i < SIZE - 1; ++i)
-			{
-				if (digits[i] < 0)
-				{
-					digits[i] += BASE;
-					--digits[i + 1];
-				}
-			}
-		}
-
-		longNumeric& operator-(longNumeric& a)
-		{
-			longNumeric n(*this);
-			n -= a;
-			return n;
-		}
-
-		longNumeric& operator--()
-		{
-			*this -= longNumeric(1);
-			return *this;
-		}
-
-		void operator*=(longNumeric& a)
-		{
-			*this = *this * a;
-		}
-
-		longNumeric operator*(longNumeric& a)
-		{
-			longNumeric result;
-			for (int i = 0; i < SIZE; ++i)
-				for (int j = 0; j < SIZE - i; j++)
-					result.digits[i + j] += digits[i] * a.digits[j];
-			for (int i = 0; i < SIZE - 1; ++i)
-			{
-				result.digits[i + 1] += result.digits[i] / BASE;
-				result.digits[i] %= BASE;
-			}
-			return result;
-		}
-
-		void operator/=(long long x)
-		{
-			for (int i = SIZE - 1; i >= 0; --i)
-			{
-				if (i)
-					digits[i - 1] += (digits[i] % x) * BASE;
-				digits[i] /= x;
-			}
-		}
-
-		longNumeric operator/(long long x)
-		{
-			longNumeric n(*this);
-			n /= x;
-			return n;
-		}
-	};
-
-ostream& operator<<(ostream& out, longNumeric& a)
+int main()
 {
-	string result;
-	char buffer[10];
-	for (int i = longNumeric::SIZE - 1; i >= 0; --i)
-	{
-		sprintf(buffer, "%09d", a.digits[i]);
-		result += buffer;
-	}
-	int first_idx = result.find_first_not_of('0');
-	if (first_idx == string::npos)
-		out << "0";
-	else
-		out << result.substr(first_idx);
-	return out;
+	string s;
+	cin >> s;
+	longNumeric a(s);
+	for (int i = 0; i < a.count; ++i)
+		cout << a.arr[i] << endl;
+	system("pause");
+	return 0;
 }
